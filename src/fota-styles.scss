@@ -43,3 +43,34 @@ $theme-colors: map.merge($theme-colors, $custom-colors);
 // ---------------- Optional helpers ----------------
 .btn-fota  { @include button-variant($fota-orange, $fota-orange); }
 .btn-slate { @include button-variant($fota-slate,  $fota-slate);  }
+
+
+
+// Lighten your slate (#3D4D6C) toward white for a soft panel bg
+$fota-slate-soft: color.mix($fota-slate, white, 85%); // tweak 80–90% to taste
+
+.bg-fota-slate-soft { background-color: $fota-slate-soft !important; }
+.text-on-fota-slate-soft { color: $fota-brown !important; } // good contrast on the light panel
+
+.bg-offwhite {
+  background-color: $fota-off !important;   // #D2CEB5
+  color: $fota-brown !important;            // readable text
+  border-color: color.mix($fota-slate, white, 30%);
+
+  &::placeholder {
+    color: color.mix($fota-brown, white, 55%);
+    opacity: 1;
+  }
+
+  &:focus {
+    background-color: $fota-off;
+    border-color: $fota-slate;              // #3D4D6C
+    box-shadow: 0 0 0 .25rem rgba($fota-slate, .25);
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: color.mix($fota-off, white, 5%);
+    opacity: 1;
+  }
+}

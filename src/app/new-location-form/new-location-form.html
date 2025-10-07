@@ -1,0 +1,73 @@
+<section class="py-4">
+  <div class="container  bg-fota-slate-soft text-on-fota-slate-soft p-4 rounded-3">
+    <h1 class="h4 mb-3">Propose a Location</h1>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="proposed_by">Proposed by</label>
+        <input id="proposed_by" type="text" class="form-control bg-offwhite"
+               [class.is-invalid]="t('proposed_by')"
+               formControlName="proposed_by" placeholder="Your name/callsign">
+        <div class="invalid-feedback" *ngIf="form.get('proposed_by')?.errors?.['required']">Required.</div>
+        <div class="invalid-feedback" *ngIf="form.get('proposed_by')?.errors?.['maxlength']">Too long.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="site_name">Site name</label>
+        <input id="site_name" type="text" class="form-control bg-offwhite"
+               [class.is-invalid]="t('site_name')"
+               formControlName="site_name" placeholder="e.g., Fort Example">
+        <div class="invalid-feedback" *ngIf="form.get('site_name')?.errors?.['required']">Required.</div>
+        <div class="invalid-feedback" *ngIf="form.get('site_name')?.errors?.['maxlength']">Too long.</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="category">Location Category</label>
+        <select id="category"
+                class="form-select bg-offwhite"
+                [class.is-invalid]="t('category')"
+                formControlName="category">
+          <option value="" disabled>Select a category…</option>
+          <option *ngFor="let c of categories" [value]="c.value">{{ c.label }}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="form.get('category')?.errors?.['required']">
+          Please choose a category.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="location">Location (city, state/country)</label>
+        <input id="location" type="text" class="form-control bg-offwhite"
+               [class.is-invalid]="t('location')"
+               formControlName="location" placeholder="e.g., Fort Eisenhower, GA, USA">
+        <div class="invalid-feedback" *ngIf="form.get('location')?.errors?.['required']">Required.</div>
+        <div class="invalid-feedback" *ngIf="form.get('location')?.errors?.['maxlength']">Too long.</div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="latitude">Latitude</label>
+          <input id="latitude" type="number" step="any" class="form-control bg-offwhite"
+                 [class.is-invalid]="t('latitude')"
+                 formControlName="latitude" placeholder="33.4167">
+          <div class="invalid-feedback" *ngIf="form.get('latitude')?.errors?.['required']">Required.</div>
+          <div class="invalid-feedback" *ngIf="form.get('latitude')?.errors?.['latRange']">-90 to 90.</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="longitude">Longitude</label>
+          <input id="longitude" type="number" step="any" class="form-control bg-offwhite"
+                 [class.is-invalid]="t('longitude')"
+                 formControlName="longitude" placeholder="-82.0940">
+          <div class="invalid-feedback" *ngIf="form.get('longitude')?.errors?.['required']">Required.</div>
+          <div class="invalid-feedback" *ngIf="form.get('longitude')?.errors?.['lonRange']">-180 to 180.</div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3 mt-4">
+        <button class="btn btn-fota" type="submit" [disabled]="submitting">Submit Proposal</button>
+        <span *ngIf="submitting" class="text-muted">Submitting…</span>
+        <span *ngIf="submitSuccess" class="text-success">Thanks! We received your proposal.</span>
+        <span *ngIf="submitError" class="text-danger">{{ submitError }}</span>
+      </div>
+    </form>
+  </div>
+</section>
