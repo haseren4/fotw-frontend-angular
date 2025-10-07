@@ -1,0 +1,45 @@
+@use "sass:map";
+@use "sass:color";
+
+// ---------------- FOTA palette ----------------
+$fota-olive:  #545B3E;
+$fota-brown:  #3F3A35;
+$fota-off:    #D2CEB5;
+$fota-orange: #D35400;
+$fota-slate:  #3D4D6C;
+
+// ---------------- Bootstrap core (legacy @import order that works) ----------------
+// Import these BEFORE overrides so core maps/mixins exist.
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+
+// ---------------- Overrides & theme extension ----------------
+$body-bg:        $fota-olive;
+$body-color:     $fota-off;
+$headings-color: $fota-off;
+
+$primary:   $fota-orange;
+$secondary: $fota-slate;
+$dark:      $fota-brown;
+$light:     color.mix($fota-off, white, 10%);
+
+// Add custom colors to Bootstrap's theme map so utilities generate: .bg-fota, .text-fota, etc.
+$custom-colors: (
+  "fota":        $fota-orange,
+  "fota-slate":  $fota-slate,
+  "fota-olive":  $fota-olive,
+  "fota-brown":  $fota-brown,
+  "fota-off":    $fota-off
+);
+
+// Merge into Bootstrap's $theme-colors (now defined because we imported variables first)
+$theme-colors: map.merge($theme-colors, $custom-colors);
+
+// ---------------- Bring in the full Bootstrap CSS ----------------
+@import "bootstrap/scss/bootstrap";
+
+// ---------------- Optional helpers ----------------
+.btn-fota  { @include button-variant($fota-orange, $fota-orange); }
+.btn-slate { @include button-variant($fota-slate,  $fota-slate);  }
