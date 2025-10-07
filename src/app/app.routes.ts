@@ -3,7 +3,8 @@ import { Routes } from '@angular/router';
 import { HomeSummary } from './home-summary/home-summary';
 import { FutureRoadmap } from './future-roadmap/future-roadmap';
 import { NewLocationFormComponent } from './new-location-form/new-location-form';
-import {GettingStartedComponent} from './getting-started-public/getting-started-public'; // ← this file exports the class above
+import {GettingStartedComponent} from './getting-started-public/getting-started-public';
+import {SiteBrowserComponent} from './site-browser-component/site-browser-component'; // ← this file exports the class above
 
 export const routes: Routes = [
   {
@@ -18,7 +19,7 @@ export const routes: Routes = [
   },
   {
     path: 'forms/new-location',
-    component: NewLocationFormComponent, // ✅ correct symbol
+    component: NewLocationFormComponent,
     title: 'Fortifications on the Air | Submit a New Location'
   },
   {
@@ -30,5 +31,10 @@ export const routes: Routes = [
     path: 'getting-started',
     component: GettingStartedComponent,
     title: 'Fortifications on the Air | Getting Started'
+  },
+  {
+    path: 'site-browser',
+    component: SiteBrowserComponent,
+    title: 'Fortifications on the Air | Browse Sites'
   }
 ];
