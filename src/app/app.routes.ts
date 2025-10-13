@@ -5,6 +5,7 @@ import { FutureRoadmap } from './future-roadmap/future-roadmap';
 import { NewLocationFormComponent } from './new-location-form/new-location-form';
 import {GettingStartedComponent} from './getting-started-public/getting-started-public';
 import {SiteBrowserComponent} from './site-browser-component/site-browser-component'; // ← this file exports the class above
+import {LocationMap} from './location-map/location-map';
 
 export const routes: Routes = [
   {
@@ -36,5 +37,10 @@ export const routes: Routes = [
     path: 'site-browser',
     component: SiteBrowserComponent,
     title: 'Fortifications on the Air | Browse Sites'
+  },
+  {
+    path: 'location-map',
+    component: LocationMap,
+    title: 'Fortifications on the Air | Location Map'
   }
 ];

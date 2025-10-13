@@ -1,1 +1,28 @@
-<p>location-map works!</p>
+<div class="container py-3">
+  <div *ngIf="loading" class="alert alert-info">Loading sites…</div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="!loading && !error" class="map-container">
+    <div class="world-map">
+      <ng-container *ngFor="let s of sites">
+        <div class="pin"
+             [style.left]="toLeftPercent(s.longitude)"
+             [style.top]="toTopPercent(s.latitude)"
+             tabindex="0"
+             (mouseenter)="onHover(s)"
+             (mouseleave)="onHover(null)"
+             (focusin)="onHover(s)"
+             (focusout)="onHover(null)">
+          <div class="dot" [class.active]="s.active"></div>
+        </div>
+      </ng-container>
+
+      <!-- Bottom-of-map tooltip -->
+      <div class="map-tooltip-bottom" *ngIf="hoveredSite as hs">
+        <div class="title">Site #{{ hs.id }}</div>
+        <div class="line" *ngIf="hs.location || hs.qth">{{ hs.location }}<span *ngIf="hs.location && hs.qth"> • </span>{{ hs.qth }}</div>
+        <div class="line" *ngIf="hs.category">Category: {{ hs.category }}</div>
+        <div class="line coords" *ngIf="hs.latitude != null && hs.longitude != null">{{ hs.latitude }}, {{ hs.longitude }}</div>
+      </div>
+    </div>
+  </div>
+</div>
