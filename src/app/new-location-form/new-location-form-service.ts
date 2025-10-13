@@ -46,12 +46,18 @@ export class NewLocationFormService {
 
   getCategories(): Observable<LocationCategory[]> {
     const fallback: LocationCategory[] = [
-      { value: 'STAR_FORT',        label: 'Star Fort / Trace Italienne' },
-      { value: 'COASTAL_BATTERY',  label: 'Coastal Battery' },
-      { value: 'EARTHWORK_REDOUT', label: 'Earthwork / Redoubt' },
-      { value: 'CASTLE_FORT',      label: 'Castle / Fort' },
+
+      { value: 'ARMY_BASE',        label: 'Army Base' },
+      { value: 'NAVY_BASE',        label: 'Navy Base' },
+      { value: 'AIR_FORCE_BASE',   label: 'Air Force Base' },
+      { value: 'MARINE_BASE',      label: 'Marine Base' },
+      { value: 'SPACE_BASE',       label: 'Space Base' },
+      { value: 'HISTORY_FORT',     label: 'Historical Fort' },
+      { value: 'HISTORY_BATTLE',   label: 'Historical Battlefield' },
+      { value: 'HISTORY_MEMORIAL', label: 'Historical Memorial' },
+      { value: 'CASTLE_FORT',      label: 'Castle' },
       { value: 'POST_INSTALLATION',label: 'On-Post Historic Site' },
-      { value: 'MUSEUM',           label: 'Museum / Heritage Area' },
+      { value: 'MUSEUM',           label: 'Museum' },
       { value: 'OTHER',            label: 'Other' }
     ];
 
