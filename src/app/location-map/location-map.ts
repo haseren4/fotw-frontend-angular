@@ -58,4 +58,10 @@ export class LocationMap implements OnInit {
     const y = (90 - clampedLat) / 180; // 0..1
     return (y * 100).toFixed(3) + '%';
   }
+
+  onClick(s: Site) {
+    if(s == null) return;
+    console.log('Site clicked:', s);
+
+  }
 }

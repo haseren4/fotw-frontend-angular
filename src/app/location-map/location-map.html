@@ -11,7 +11,8 @@
              (mouseenter)="onHover(s)"
              (mouseleave)="onHover(null)"
              (focusin)="onHover(s)"
-             (focusout)="onHover(null)">
+             (focusout)="onHover(null)"
+              (click)="onClick(s)">
           <div class="dot" [class.active]="s.active"></div>
         </div>
       </ng-container>
