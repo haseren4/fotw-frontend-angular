@@ -1,6 +1,17 @@
 <div class="container py-4">
-  <h1 class="mb-3">Your Dashboard</h1>
-  <p class="text-muted">Welcome! This is your personalized dashboard. After login, you will land here.</p>
+  <h1 class="mb-3">{{ greeting ? greeting : ('Welcome' + (callsign ? ', ' + callsign : '')) }}!</h1>
+  <p class="text-muted">This is your personalized dashboard.</p>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-2">Message of the Day</h5>
+          <p class="mb-0">{{ motd$ | async }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row g-3">
     <div class="col-12 col-md-6">

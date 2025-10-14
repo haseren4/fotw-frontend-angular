@@ -39,6 +39,12 @@ export class LoginComponent {
     this.auth.login({ callsign, password }).subscribe({
       next: (res) => {
         if (res.success) {
+          // Persist a readable display cookie with the user's callsign (in case the server cookie is HttpOnly)
+          // 7 days expiry, SameSite=Lax to send on same-site navigations, Path=/ for the whole app.
+          try {
+            const val = encodeURIComponent(callsign.toUpperCase());
+            document.cookie = `callsign=${val}; Path=/; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`;
+          } catch {}
           // Navigate to user dashboard on success
           this.router.navigateByUrl('/dashboard');
         } else {
