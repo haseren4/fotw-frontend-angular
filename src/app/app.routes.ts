@@ -65,5 +65,10 @@ export const routes: Routes = [
     path: 'login',
     component: LoginComponent,
     title: 'Fortifications on the Air | Log in'
+  },
+  {
+    path: 'activations',
+    loadComponent: () => import('./activations/activations-list.component').then(m => m.ActivationsListComponent),
+    title: 'Fortifications on the Air | Activations'
   }
 ];
