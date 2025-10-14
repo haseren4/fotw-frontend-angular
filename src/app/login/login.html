@@ -1,0 +1,35 @@
+<section class="py-4">
+  <div class="container p-4 rounded-3" style="max-width: 480px;">
+    <h1 class="h3 mb-3">Log in</h1>
+    <p class="text-muted mb-4">Enter your callsign and password to continue.</p>
+
+    <div *ngIf="serverError" class="alert alert-danger" role="alert">{{ serverError }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label for="callsign" class="form-label">Callsign</label>
+        <input id="callsign" type="text" class="form-control" formControlName="callsign"
+               [class.is-invalid]="callsign?.invalid && (callsign?.dirty || callsign?.touched)">
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['required']">Callsign is required.</div>
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['minlength']">Must be at least 2 characters.</div>
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['maxlength']">Must be at most 32 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input id="password" type="password" class="form-control" formControlName="password"
+               [class.is-invalid]="password?.invalid && (password?.dirty || password?.touched)">
+        <div class="invalid-feedback" *ngIf="password?.errors?.['required']">Password is required.</div>
+        <div class="invalid-feedback" *ngIf="password?.errors?.['minlength']">Must be at least 8 characters.</div>
+        <div class="invalid-feedback" *ngIf="password?.errors?.['maxlength']">Must be at most 128 characters.</div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-fota" type="submit" [disabled]="submitting || form.invalid">
+          {{ submitting ? 'Logging in…' : 'Log in' }}
+        </button>
+        <a class="btn btn-outline-fota" routerLink="/register">Create an account</a>
+      </div>
+    </form>
+  </div>
+</section>

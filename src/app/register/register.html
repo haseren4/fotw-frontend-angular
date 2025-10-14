@@ -1,0 +1,46 @@
+<section class="py-4">
+  <div class="container p-4 rounded-3" style="max-width: 640px;">
+    <h1 class="h3 mb-3">Create your account</h1>
+    <p class="text-muted mb-4">Register to schedule activations, upload logs, and track your stats.</p>
+
+    <div *ngIf="serverError" class="alert alert-danger" role="alert">{{ serverError }}</div>
+    <div *ngIf="serverSuccess" class="alert alert-success" role="alert">{{ serverSuccess }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label for="callsign" class="form-label">Callsign</label>
+        <input id="callsign" type="text" class="form-control" formControlName="callsign" [class.is-invalid]="callsign?.invalid && (callsign?.dirty || callsign?.touched)">
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['required']">Callsign is required.</div>
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['minlength']">Must be at least 2 characters.</div>
+        <div class="invalid-feedback" *ngIf="callsign?.errors?.['maxlength']">Must be at most 32 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="email?.invalid && (email?.dirty || email?.touched)">
+        <div class="invalid-feedback" *ngIf="email?.errors?.['required']">Email is required.</div>
+        <div class="invalid-feedback" *ngIf="email?.errors?.['email']">Enter a valid email address.</div>
+        <div class="invalid-feedback" *ngIf="email?.errors?.['maxlength']">Must be at most 128 characters.</div>
+      </div>
+
+      <div formGroupName="passwordGroup" class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control mb-2" formControlName="password" [class.is-invalid]="(password?.invalid && (password?.dirty || password?.touched)) || passwordGroup?.errors?.['passwordMismatch']">
+        <div class="invalid-feedback" *ngIf="password?.errors?.['required']">Password is required.</div>
+        <div class="invalid-feedback" *ngIf="password?.errors?.['minlength']">Must be at least 8 characters.</div>
+        <div class="invalid-feedback" *ngIf="password?.errors?.['maxlength']">Must be at most 128 characters.</div>
+
+        <label class="form-label mt-2">Confirm password</label>
+        <input type="password" class="form-control" formControlName="confirmPassword" [class.is-invalid]="passwordGroup?.errors?.['passwordMismatch'] && (confirmPassword?.dirty || confirmPassword?.touched)">
+        <div class="invalid-feedback" *ngIf="passwordGroup?.errors?.['passwordMismatch']">Passwords do not match.</div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-fota" type="submit" [disabled]="submitting || form.invalid">
+          {{ submitting ? 'Registering…' : 'Register' }}
+        </button>
+        <a class="btn btn-outline-fota" routerLink="/login">Have an account? Log in</a>
+      </div>
+    </form>
+  </div>
+</section>

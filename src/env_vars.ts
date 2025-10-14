@@ -1,3 +1,4 @@
 export const environment = {
-  apiBase: 'http://localhost:8080'
+  // Use relative API base so Angular dev-server proxy can forward to backend.
+  apiBase: ''
 };

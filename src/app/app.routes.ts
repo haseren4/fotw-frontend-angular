@@ -6,6 +6,9 @@ import { NewLocationFormComponent } from './new-location-form/new-location-form'
 import {GettingStartedComponent} from './getting-started-public/getting-started-public';
 import {SiteBrowserComponent} from './site-browser-component/site-browser-component'; // ← this file exports the class above
 import {LocationMap} from './location-map/location-map';
+import { RegisterComponent } from './register/register';
+import { LoginComponent } from './login/login';
+import { DashboardComponent } from './dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -17,6 +20,11 @@ export const routes: Routes = [
     path: 'home',
     component: HomeSummary,
     title: 'Fortifications on the Air | Home'
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    title: 'Fortifications on the Air | Dashboard'
   },
   {
     path: 'forms/new-location',
@@ -42,5 +50,20 @@ export const routes: Routes = [
     path: 'location-map',
     component: LocationMap,
     title: 'Fortifications on the Air | Location Map'
+  },
+  {
+    path: 'forms/register',
+    component: RegisterComponent,
+    title: 'Fortifications on the Air | Register'
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    title: 'Fortifications on the Air | Register'
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+    title: 'Fortifications on the Air | Log in'
   }
 ];

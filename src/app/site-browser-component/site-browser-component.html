@@ -8,7 +8,7 @@
     <li class="list-group-item" *ngFor="let s of sites">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <strong>{{ ('Site #' + (s.id ?? '?')) }}</strong>
+          <strong>Site #{{ s.id }}</strong>
           <div class="small" *ngIf="s.location || s.qth">
             {{ s.location }}<span *ngIf="s.location && s.qth"> • </span>{{ s.qth }}
           </div>
