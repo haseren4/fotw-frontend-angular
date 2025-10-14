@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>FOTA Pin — Army Base</title>
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="1" in="SourceAlpha" result="off"/>
+      <feGaussianBlur in="off" stdDeviation="1" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .3 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Pin body -->
+    <path d="M32 2c-11.05 0-20 8.95-20 20 0 12.5 12.5 22.5 19.1 30.8.5.6 1.3.6 1.8 0C39.5 44.5 52 34.5 52 22c0-11.05-8.95-20-20-20z"
+          fill="#3D4D6C" stroke="#D2CEB5" stroke-width="2"/>
+    <!-- Inner disk -->
+    <circle cx="32" cy="22" r="12.5" fill="#545B3E" stroke="#D2CEB5" stroke-width="1.5"/>
+    <!-- Army Base glyph: rounded square with 5-point star (generic, not US Army mark) -->
+    <g transform="translate(32,22)">
+      <!-- rounded square badge -->
+      <rect x="-8.5" y="-8.5" width="17" height="17" rx="3" ry="3"
+            fill="none" stroke="#D35400" stroke-width="2"/>
+      <!-- five-point star -->
+      <path d="M0,-6.8 L1.8,-1.5 L7, -1.5 L2.9,1.3 L4.6,6.1 L0,3.3 L-4.6,6.1 L-2.9,1.3 L-7,-1.5 L-1.8,-1.5 Z"
+            fill="#D2CEB5" stroke="#D35400" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

@@ -13,21 +13,57 @@
       <div class="card h-100 shadow-sm">
         <div class="card-body d-flex flex-column">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <h2 class="h5 mb-0">{{ item.activation.title || ('Activation #' + item.activation.id) }}</h2>
-            <span class="badge bg-secondary text-uppercase">{{ item.activation.status || 'scheduled' }}</span>
+            <h2 class="h5 mb-0 d-flex align-items-center">
+              <span class="badge rounded-pill bg-primary me-2" *ngIf="item.location?.category">{{ item.location?.category | underscoreToSpace }}</span>
+              <ng-container *ngIf="item.location as loc; else fallbackLoc">
+                <span *ngIf="loc.location; else qthOrCoords">{{ loc.location | underscoreToSpace }}</span>
+                <ng-template #qthOrCoords>
+                  <span *ngIf="loc.qth; else coordsOrId">{{ loc.qth | underscoreToSpace }}</span>
+                </ng-template>
+                <ng-template #coordsOrId>
+                  <span *ngIf="(loc.latitude || loc.longitude); else idOnly">{{ loc.latitude }}, {{ loc.longitude }}</span>
+                </ng-template>
+                <ng-template #idOnly>
+                  <span class="badge rounded-pill bg-secondary">Site #{{ loc.id || item.activation?.siteId || item.activation['site_id'] || item.activation.id }}</span>
+                </ng-template>
+              </ng-container>
+              <ng-template #fallbackLoc>
+                <span class="badge rounded-pill bg-secondary">Site #{{ item.activation?.siteId || item.activation['site_id'] || item.activation.id }}</span>
+              </ng-template>
+            </h2>
+            <span class="badge bg-secondary">
+              <img [src]="(item.activation.status || 'scheduled') | statusIcon"
+                   [alt]="(item.activation.status || 'scheduled') | underscoreToSpace"
+                   [title]="(item.activation.status || 'scheduled') | underscoreToSpace"
+                   style="height:20px; vertical-align:middle;">
+            </span>
           </div>
+
+          <!-- Embedded OSM map under the Site name with a pin at the site's location -->
+          <div *ngIf="item.location?.latitude != null && item.location?.longitude != null" class="mb-2">
+            <iframe
+              [src]="buildOsmEmbedUrlSafe(item.location?.latitude, item.location?.longitude, 13)"
+              [title]="(item.location?.location || item.location?.qth || ('Site #' + item.location?.id))"
+              width="100%"
+              height="180"
+              style="border:0; border-radius: 0.25rem; overflow: hidden;"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
           <div class="text-muted small mb-2">
             <span *ngIf="item.activation.callsign">By {{ item.activation.callsign }}</span>
             <span *ngIf="item.activation.startedAt"> · Starts: {{ item.activation.startedAt | date:'short' }}</span>
             <span *ngIf="item.activation.endedAt"> · Ends: {{ item.activation.endedAt | date:'short' }}</span>
           </div>
-          <p class="mb-3" *ngIf="item.activation.description">{{ item.activation.description }}</p>
+          <p class="mb-3" *ngIf="item.activation.description">{{ item.activation.description | underscoreToSpace }}</p>
 
           <div class="mt-auto">
             <div class="small text-uppercase text-muted mb-1">Latest update</div>
             <div *ngIf="item.latestPost; else noPost">
               <div class="small mb-1" *ngIf="item.latestPost.createdAt">{{ item.latestPost.createdAt | date:'short' }}</div>
-              <div>{{ item.latestPost.content }}</div>
+              <div>{{ item.latestPost.content | underscoreToSpace }}</div>
             </div>
             <ng-template #noPost>
               <div class="text-muted">No updates yet.</div>

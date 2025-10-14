@@ -30,4 +30,8 @@ export class SiteService {
   getAllSites(): Observable<Site[]> {
     return this.http.get<Site[]>(`${this.baseUrl}/all`);
   }
+
+  getById(id: number | string): Observable<Site> {
+    return this.http.get<Site>(`${this.baseUrl}/${id}`);
+  }
 }
