@@ -116,7 +116,9 @@ export class ActivationsService {
   createActivationPost(payload: Partial<ActivationPost>): Observable<ActivationPost> {
     const body = this.normalizePayload(payload, {
       activationId: 'activation_id',
-      createdAt: 'created_at'
+      createdAt: 'created_at',
+      content: 'body',
+      author: 'author_callsign'
     });
     const headers = new HttpHeaders({
       'Accept': 'application/json',
@@ -127,11 +129,14 @@ export class ActivationsService {
 
   // Helper: best-effort fetch of the latest post for an activation
   getLatestPostForActivation(activationId: number | string): Observable<ActivationPost[]> {
-    // Use common query param conventions: limit=1, sort=desc or order=desc
+    // Request newest-first using multiple common conventions; backend may ignore unknown params.
     const params = new HttpParams()
       .set('activation_id', String(activationId))
       .set('limit', '1')
-      .set('sort', 'desc');
+      .set('order', 'desc')
+      .set('order_by', 'created_at')
+      .set('sort', 'desc')
+      .set('sort_by', 'created_at');
     return this.http.get<ActivationPost[]>(this.postsUrl, { params, withCredentials: true });
   }
 }

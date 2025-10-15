@@ -27,7 +27,7 @@ export class LocationMap implements OnInit {
     this.error = null;
     this.siteService.getAllSites().subscribe({
       next: (sites) => {
-        this.sites = (sites ?? []).filter(s => s.latitude != null && s.longitude != null);
+        this.sites = (sites ?? []).filter(s => (s.active === true) && s.latitude != null && s.longitude != null);
         this.loading = false;
       },
       error: (err) => {

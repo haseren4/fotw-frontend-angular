@@ -9,6 +9,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 interface ActivationWithLatest {
   activation: Activation;
   latestPost?: ActivationPost;
+  latestPostAuthor?: string;
   location?: Site;
 }
 
@@ -52,19 +53,85 @@ export class ActivationsListComponent implements OnInit {
       .subscribe({
         next: (activations) => {
           if (!Array.isArray(activations)) activations = [] as any;
-          // Initialize cards with activation data
-          this.items = activations.map(a => ({ activation: a }));
-          // For each activation, fetch the latest post (best-effort)
+
+          // Normalize common backend snake_case fields into camelCase expected by the UI
+          const normalized = activations.map(a => {
+            const anyA: any = a as any;
+            const startedAt = a?.startedAt ?? anyA['start_time'] ?? anyA['started_at'];
+            const endedAt = a?.endedAt ?? anyA['end_time'] ?? anyA['ended_at'];
+            const siteId = a?.siteId ?? anyA['site_id'] ?? anyA?.site?.id;
+            const callsign = a?.callsign ?? anyA?.user?.callsign ?? anyA?.['operator_callsign'];
+            return { ...a, startedAt, endedAt, siteId, callsign } as Activation;
+          });
+
+          // Filter to only show:
+          // - On-air activations: no endedAt
+          // - Future activations: startedAt is in the future
+          const now = new Date();
+          const filtered = normalized.filter(a => {
+            const anyA: any = a as any;
+            const endedRaw = a?.endedAt ?? anyA['end_time'] ?? anyA['ended_at'];
+            const ended = endedRaw?.toString().trim();
+            // We want on-air => not ended
+            const onAir = !ended;
+
+            const startRaw = a?.startedAt ?? anyA['start_time'] ?? anyA['started_at'];
+            const startStr = startRaw?.toString().trim();
+            const startDateValid = !!startStr && !isNaN(Date.parse(startStr));
+            const future = startDateValid ? new Date(startStr as string) > now : false;
+
+            return onAir || future;
+          });
+
+          // Initialize cards with activation data; if backend provided a full site object, use it
+          this.items = filtered.map(a => {
+            const loc = (a as any)?.site as Site | undefined;
+            return { activation: a, location: loc };
+          });
+
+          // For each activation, fetch the latest post (best-effort) and, if needed, the Site details
           for (const item of this.items) {
             const id = item.activation?.id;
             if (id === undefined || id === null) continue;
             this.svc.getLatestPostForActivation(id).subscribe({
               next: (posts) => {
-                const latest = Array.isArray(posts) && posts.length > 0 ? posts[0] : undefined;
-                item.latestPost = latest;
+                let latest: any | undefined;
+                if (Array.isArray(posts) && posts.length > 0) {
+                  const sorted = posts.slice().sort((a: any, b: any) => {
+                    const aDateStr = (a as any)['createdAt'] ?? (a as any)['created_at'] ?? '';
+                    const bDateStr = (b as any)['createdAt'] ?? (b as any)['created_at'] ?? '';
+                    const aTs = Date.parse(aDateStr) || 0;
+                    const bTs = Date.parse(bDateStr) || 0;
+                    return bTs - aTs; // newest first
+                  });
+                  latest = sorted[0];
+                } else {
+                  latest = undefined;
+                }
+                item.latestPost = latest ? { ...latest, createdAt: (latest as any)['createdAt'] ?? (latest as any)['created_at'] } : undefined;
+
+                // Derive author's callsign for the latest post (robust to various API shapes)
+                const rawAuthor = (latest as any)?.['author'];
+                let authorCs: string | undefined;
+                if (typeof rawAuthor === 'string') {
+                  authorCs = rawAuthor;
+                } else if (rawAuthor && typeof rawAuthor === 'object') {
+                  authorCs = (rawAuthor as any)?.['callsign'] ?? (rawAuthor as any)?.['name'];
+                }
+                authorCs = authorCs
+                  ?? (latest as any)?.['user']?.['callsign']
+                  ?? (latest as any)?.['callsign']
+                  ?? (latest as any)?.['operator_callsign']
+                  ?? (latest as any)?.['author_callsign']
+                  ?? (latest as any)?.['posted_by']
+                  ?? (latest as any)?.['posted_by_callsign'];
+                item.latestPostAuthor = (typeof authorCs === 'string' && authorCs.trim().length > 0)
+                  ? authorCs.trim().toUpperCase()
+                  : undefined;
+
                 // Determine site id from latest post or activation
-                const siteId = (latest?.['siteId'] ?? latest?.['site_id'] ?? item.activation?.siteId ?? item.activation?.['site_id']);
-                if (siteId !== undefined && siteId !== null && String(siteId).trim() !== '') {
+                const siteId = (latest?.['siteId'] ?? latest?.['site_id'] ?? item.activation?.siteId ?? (item.activation as any)?.['site_id'] ?? (item.activation as any)?.site?.id);
+                if (!item.location && siteId !== undefined && siteId !== null && String(siteId).trim() !== '') {
                   this.siteSvc.getById(siteId).subscribe({
                     next: (site) => { item.location = site; },
                     error: () => { /* ignore */ }
@@ -88,5 +155,51 @@ export class ActivationsListComponent implements OnInit {
 
   trackById(index: number, item: ActivationWithLatest) {
     return item.activation?.id ?? index;
+  }
+
+  // Derived status helpers used for icon display
+  isOnAir(a?: Activation | null): boolean {
+    const anyA: any = a as any;
+    const endedRaw = a?.endedAt ?? anyA?.['end_time'] ?? anyA?.['ended_at'];
+    const ended = endedRaw?.toString().trim();
+    // Consider on-air when there is no endedAt value (empty or undefined)
+    return !ended;
+  }
+
+  isFuture(a?: Activation | null): boolean {
+    const anyA: any = a as any;
+    const startRaw = a?.startedAt ?? anyA?.['start_time'] ?? anyA?.['started_at'];
+    const startStr = startRaw?.toString().trim();
+    if (!startStr || isNaN(Date.parse(startStr))) return false;
+    return new Date(startStr) > new Date();
+  }
+
+  getDisplayStatus(a?: Activation | null): 'on_air' | 'scheduled' {
+    // On /activations we only display on-air or scheduled (future)
+    return this.isOnAir(a) ? 'on_air' : 'scheduled';
+  }
+
+  // Human-friendly uptime string (for on-air activations)
+  getUptime(a?: Activation | null): string | null {
+    if (!a) return null;
+    if (!this.isOnAir(a)) return null;
+    const anyA: any = a as any;
+    const startRaw = a?.startedAt ?? anyA?.['start_time'] ?? anyA?.['started_at'];
+    const startStr = startRaw?.toString().trim();
+    const startMs = startStr && !isNaN(Date.parse(startStr)) ? Date.parse(startStr) : NaN;
+    if (isNaN(startMs)) return null;
+    const nowMs = Date.now();
+    let delta = Math.max(0, nowMs - startMs);
+
+    const sec = Math.floor(delta / 1000);
+    const days = Math.floor(sec / 86400);
+    const hours = Math.floor((sec % 86400) / 3600);
+    const minutes = Math.floor((sec % 3600) / 60);
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0 || days > 0) parts.push(`${hours}h`);
+    parts.push(`${minutes}m`);
+    return parts.join(' ');
   }
 }

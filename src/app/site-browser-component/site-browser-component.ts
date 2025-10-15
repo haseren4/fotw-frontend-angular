@@ -24,7 +24,7 @@ export class SiteBrowserComponent implements OnInit {
     this.error = null;
     this.siteService.getAllSites().subscribe({
       next: (sites) => {
-        this.sites = sites ?? [];
+        this.sites = (sites ?? []).filter(s => s.active === true);
         this.loading = false;
       },
       error: (err) => {

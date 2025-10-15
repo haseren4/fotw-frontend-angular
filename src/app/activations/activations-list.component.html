@@ -24,20 +24,24 @@
                   <span *ngIf="(loc.latitude || loc.longitude); else idOnly">{{ loc.latitude }}, {{ loc.longitude }}</span>
                 </ng-template>
                 <ng-template #idOnly>
-                  <span class="badge rounded-pill bg-secondary">Site #{{ loc.id || item.activation?.siteId || item.activation['site_id'] || item.activation.id }}</span>
+                  <span class="badge rounded-pill bg-secondary">Site #{{ loc.id || item.activation.siteId || item.activation['site_id'] || item.activation.id }}</span>
                 </ng-template>
               </ng-container>
               <ng-template #fallbackLoc>
-                <span class="badge rounded-pill bg-secondary">Site #{{ item.activation?.siteId || item.activation['site_id'] || item.activation.id }}</span>
+                <span class="badge rounded-pill bg-secondary">Site #{{ item.activation.siteId || item.activation['site_id'] || item.activation.id }}</span>
               </ng-template>
             </h2>
-            <span class="badge bg-secondary">
-              <img [src]="(item.activation.status || 'scheduled') | statusIcon"
-                   [alt]="(item.activation.status || 'scheduled') | underscoreToSpace"
-                   [title]="(item.activation.status || 'scheduled') | underscoreToSpace"
+            <span class="badge bg-secondary d-flex align-items-center gap-2">
+              <img [src]="getDisplayStatus(item.activation) | statusIcon"
+                   [alt]="getDisplayStatus(item.activation) | underscoreToSpace"
+                   [title]="getDisplayStatus(item.activation) | underscoreToSpace"
                    style="height:20px; vertical-align:middle;">
+              <span class="text-uppercase small">{{ getDisplayStatus(item.activation) | underscoreToSpace }}</span>
             </span>
           </div>
+
+          <!-- QTH explicit line if available -->
+          <div class="text-muted small mb-1" *ngIf="item.location?.qth">QTH: {{ item.location?.qth | underscoreToSpace }}</div>
 
           <!-- Embedded OSM map under the Site name with a pin at the site's location -->
           <div *ngIf="item.location?.latitude != null && item.location?.longitude != null" class="mb-2">
@@ -53,17 +57,20 @@
           </div>
 
           <div class="text-muted small mb-2">
-            <span *ngIf="item.activation.callsign">By {{ item.activation.callsign }}</span>
-            <span *ngIf="item.activation.startedAt"> · Starts: {{ item.activation.startedAt | date:'short' }}</span>
-            <span *ngIf="item.activation.endedAt"> · Ends: {{ item.activation.endedAt | date:'short' }}</span>
+            <span *ngIf="(item.activation.callsign || item.activation['user']?.callsign)">By {{ item.activation.callsign || item.activation['user']?.callsign }}</span>
+            <span *ngIf="item.activation.startedAt"> · Start: {{ item.activation.startedAt | date:'short' }}</span>
+            <span *ngIf="isOnAir(item.activation) && getUptime(item.activation)"> · Uptime: {{ getUptime(item.activation) }}</span>
           </div>
           <p class="mb-3" *ngIf="item.activation.description">{{ item.activation.description | underscoreToSpace }}</p>
 
           <div class="mt-auto">
             <div class="small text-uppercase text-muted mb-1">Latest update</div>
             <div *ngIf="item.latestPost; else noPost">
-              <div class="small mb-1" *ngIf="item.latestPost.createdAt">{{ item.latestPost.createdAt | date:'short' }}</div>
-              <div>{{ item.latestPost.content | underscoreToSpace }}</div>
+              <div class="small mb-1" *ngIf="item.latestPost.createdAt">
+                {{ item.latestPost.createdAt | date:'short' }}
+
+              </div>
+              <div>{{ (item.latestPost['title'] || item.latestPost['body'] || item.latestPost['content']) | underscoreToSpace }}  <span *ngIf="item.latestPostAuthor"> · By {{ item.latestPostAuthor }}</span></div>
             </div>
             <ng-template #noPost>
               <div class="text-muted">No updates yet.</div>
