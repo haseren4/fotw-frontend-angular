@@ -1,0 +1,53 @@
+<section class="container my-4">
+  <h1 class="h3 mb-3">Post an Activation Update</h1>
+  <p class="text-muted" *ngIf="callsign; else noCallsign">Logged in as <strong>{{ callsign }}</strong>.</p>
+  <ng-template #noCallsign>
+    <p class="text-warning">You appear to be logged out. You can still attempt to post; if your session is invalid the server will reject it.</p>
+  </ng-template>
+
+  <div class="alert alert-success" *ngIf="submitSuccess">{{ submitSuccess }}</div>
+  <div class="alert alert-danger" *ngIf="submitError">{{ submitError }}</div>
+
+  <form [formGroup]="spotForm" (ngSubmit)="submit()" class="card p-3 shadow-sm">
+    <div class="mb-3">
+      <label class="form-label">Activation</label>
+      <div class="input-group">
+        <span class="input-group-text">#</span>
+        <input type="text" class="form-control" formControlName="activationId" placeholder="Activation ID">
+      </div>
+      <div class="form-text">Choose from your current activations below or enter any Activation ID.</div>
+      <div class="text-danger small" *ngIf="spotForm.get('activationId')?.touched && spotForm.get('activationId')?.invalid">Activation ID is required.</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Message</label>
+      <textarea class="form-control" formControlName="content" rows="4" placeholder="Share band/mode, frequency, QSY, QRT warnings, etc."></textarea>
+      <div class="text-danger small" *ngIf="spotForm.get('content')?.touched && spotForm.get('content')?.invalid">Message is required.</div>
+    </div>
+
+    <div class="form-check mb-3">
+      <input type="checkbox" class="form-check-input" id="createdAtNow" formControlName="createdAtNow">
+      <label class="form-check-label" for="createdAtNow">Timestamp this post with current time</label>
+    </div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="submitting">{{ submitting ? 'Posting…' : 'Post Update' }}</button>
+  </form>
+
+  <div class="mt-4" *ngIf="onAirActivations.length > 0">
+    <div class="small text-uppercase text-muted mb-2">On-air activations</div>
+    <div class="list-group">
+      <button type="button" class="list-group-item list-group-item-action" *ngFor="let a of onAirActivations" (click)="spotForm.patchValue({ activationId: a.id })">
+        <div class="d-flex w-100 justify-content-between">
+          <h6 class="mb-1">Activation #{{ a.id }}</h6>
+          <small *ngIf="a.startedAt">Started: {{ a.startedAt | date:'short' }}</small>
+        </div>
+        <p class="mb-1" *ngIf="a.title">{{ a.title | underscoreToSpace }}</p>
+        <small *ngIf="a.callsign">By {{ a.callsign }}</small>
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <a routerLink="/activations" class="btn btn-outline-secondary btn-sm">Back to Activations</a>
+  </div>
+</section>

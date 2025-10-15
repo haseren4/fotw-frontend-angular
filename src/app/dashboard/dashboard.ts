@@ -36,6 +36,12 @@ export class DashboardComponent implements OnInit {
   endSuccess: string | null = null;
   endError: string | null = null;
 
+  // Self Spot form state
+  spotForm!: FormGroup;
+  spotSubmitting = false;
+  spotSuccess: string | null = null;
+  spotError: string | null = null;
+
   constructor(
     private motd: MotdService,
     private dashboardSvc: DashboardService,
@@ -74,6 +80,12 @@ export class DashboardComponent implements OnInit {
       siteId: ['', []],
       status: ['scheduled', []],
       callsign: [cookieCallsign ?? '', []]
+    });
+
+    // Init self-spot form
+    this.spotForm = this.fb.group({
+      content: ['', [Validators.required, Validators.maxLength(2000)]],
+      createdAtNow: [true, []]
     });
 
     if (cookieCallsign) {
@@ -216,6 +228,47 @@ export class DashboardComponent implements OnInit {
         console.error('Failed to end activation', err);
         this.endError = err?.error?.message || 'Failed to end activation.';
         this.ending = false;
+      }
+    });
+  }
+
+  submitSelfSpot(): void {
+    this.spotSuccess = null;
+    this.spotError = null;
+
+    if (!this.currentActivation || !this.currentActivation.id) {
+      this.spotError = 'No active activation to post to.';
+      return;
+    }
+
+    if (this.spotForm.invalid) {
+      this.spotForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.spotForm.value;
+    const payload: any = {
+      activationId: String(this.currentActivation.id).trim(),
+      content: (raw.content ?? '').toString().trim()
+    };
+    if (this.callsign && typeof this.callsign === 'string' && this.callsign.trim()) {
+      payload.author = this.callsign.trim().toUpperCase();
+    }
+    if (raw.createdAtNow) {
+      payload.createdAt = new Date().toISOString();
+    }
+
+    this.spotSubmitting = true;
+    this.activations.createActivationPost(payload).subscribe({
+      next: () => {
+        this.spotSubmitting = false;
+        this.spotSuccess = 'Spot posted.';
+        this.spotForm.patchValue({ content: '' });
+      },
+      error: (err) => {
+        console.error('Failed to post spot', err);
+        this.spotSubmitting = false;
+        this.spotError = err?.error?.message || 'Failed to post spot.';
       }
     });
   }

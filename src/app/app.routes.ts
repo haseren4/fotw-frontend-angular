@@ -70,5 +70,15 @@ export const routes: Routes = [
     path: 'activations',
     loadComponent: () => import('./activations/activations-list.component').then(m => m.ActivationsListComponent),
     title: 'Fortifications on the Air | Activations'
+  },
+  {
+    path: 'spot',
+    loadComponent: () => import('./spot/spot').then(m => m.SpotComponent),
+    title: 'Fortifications on the Air | Spot an Update'
+  },
+  {
+    path: 'on-air-map',
+    loadComponent: () => import('./activations/on-air-map.component').then(m => m.OnAirMapComponent),
+    title: 'Fortifications on the Air | On-Air Activations Map'
   }
 ];
