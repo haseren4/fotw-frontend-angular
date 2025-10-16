@@ -5,6 +5,7 @@ import { Site, SiteService } from '../site-service/site-service';
 import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
 import { StatusIconPipe } from '../shared/status-icon.pipe';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { OnAirMapComponent } from './on-air-map.component';
 
 interface ActivationWithLatest {
   activation: Activation;
@@ -16,7 +17,7 @@ interface ActivationWithLatest {
 @Component({
   selector: 'app-activations-list',
   standalone: true,
-  imports: [CommonModule, UnderscoreToSpacePipe, StatusIconPipe],
+  imports: [CommonModule, UnderscoreToSpacePipe, StatusIconPipe, OnAirMapComponent],
   templateUrl: './activations-list.component.html',
   styleUrls: ['./activations-list.component.scss']
 })

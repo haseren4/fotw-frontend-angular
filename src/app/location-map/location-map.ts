@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SiteService, Site } from '../site-service/site-service';
 
@@ -9,6 +9,8 @@ import { SiteService, Site } from '../site-service/site-service';
   styleUrl: './location-map.scss'
 })
 export class LocationMap implements OnInit {
+  @Input() singleSite?: Site | null;
+
   sites: Site[] = [];
   loading = false;
   error: string | null = null;
@@ -19,7 +21,13 @@ export class LocationMap implements OnInit {
   constructor(private siteService: SiteService) {}
 
   ngOnInit(): void {
-    this.fetchSites();
+    if (this.singleSite && this.singleSite.latitude != null && this.singleSite.longitude != null) {
+      this.sites = [this.singleSite];
+      this.loading = false;
+      this.error = null;
+    } else {
+      this.fetchSites();
+    }
   }
 
   private fetchSites(): void {

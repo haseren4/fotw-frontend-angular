@@ -1,6 +1,11 @@
 <section class="container my-4">
   <h1 class="h3 mb-3">Activations</h1>
 
+    <!-- On-Air Activations Map -->
+    <div class="mb-3">
+      <app-on-air-map></app-on-air-map>
+    </div>
+
   <div *ngIf="loading" class="alert alert-info">Loading activations…</div>
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 

@@ -96,17 +96,9 @@
               </ng-template>
             </div>
 
-            <!-- Embedded OSM map under the Site name with a pin at the site's location -->
+            <!-- Use the shared LocationMap UX for consistency -->
             <div *ngIf="currentSite?.latitude != null && currentSite?.longitude != null" class="mb-3">
-              <iframe
-                [src]="buildOsmEmbedUrlSafe(currentSite?.latitude, currentSite?.longitude, 14)"
-                [title]="(currentSite?.location || currentSite?.qth || ('Site #' + currentSite?.id))"
-                width="100%"
-                height="220"
-                style="border:0; border-radius: 0.25rem; overflow: hidden;"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-              ></iframe>
+              <app-location-map [singleSite]="currentSite"></app-location-map>
             </div>
 
             <div class="mb-2"><strong>Status:</strong>
@@ -125,7 +117,7 @@
               <form [formGroup]="spotForm" (ngSubmit)="submitSelfSpot()" novalidate>
                 <div class="mb-2">
                   <label class="form-label" for="selfSpotBody">Message</label>
-                  <textarea id="selfSpotBody" class="form-control" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
+                  <textarea id="selfSpotBody" class="form-control bg-offwhite text-on-fota-slate-soft" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
                   <div class="text-danger small mt-1" *ngIf="spotForm.get('content')?.touched && spotForm.get('content')?.invalid">
                     Message is required.
                   </div>

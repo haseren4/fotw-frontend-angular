@@ -10,11 +10,12 @@ import { Site, SiteService } from '../site-service/site-service';
 import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
 import { StatusIconPipe } from '../shared/status-icon.pipe';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { LocationMap } from '../location-map/location-map';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, UnderscoreToSpacePipe, StatusIconPipe],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, UnderscoreToSpacePipe, StatusIconPipe, LocationMap],
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit {
