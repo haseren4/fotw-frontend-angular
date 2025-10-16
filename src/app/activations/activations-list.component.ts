@@ -6,6 +6,8 @@ import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
 import { StatusIconPipe } from '../shared/status-icon.pipe';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { OnAirMapComponent } from './on-air-map.component';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 interface ActivationWithLatest {
   activation: Activation;
@@ -25,9 +27,17 @@ export class ActivationsListComponent implements OnInit {
   private svc = inject(ActivationsService);
   private siteSvc = inject(SiteService);
   private sanitizer = inject(DomSanitizer);
+  private router = inject(Router);
   loading = true;
   error: string | null = null;
   items: ActivationWithLatest[] = [];
+
+  // Modal state for ending an activation with optional ADIF upload
+  showEndModal = false;
+  selectedActivation: Activation | null = null;
+  selectedAdifFile: File | null = null;
+  submitting = false;
+  submitError: string | null = null;
 
   // Build an OSM embed URL for iframes with a marker at the site and sanitize for resource URL context
   buildOsmEmbedUrlSafe(lat?: number, lon?: number, zoom = 13): SafeResourceUrl | null {
@@ -202,5 +212,50 @@ export class ActivationsListComponent implements OnInit {
     if (hours > 0 || days > 0) parts.push(`${hours}h`);
     parts.push(`${minutes}m`);
     return parts.join(' ');
+  }
+
+  // UI Actions for ending activation
+  openEndModal(a: Activation) {
+    this.selectedActivation = a;
+    this.selectedAdifFile = null;
+    this.submitError = null;
+    this.showEndModal = true;
+  }
+
+  closeEndModal() {
+    if (this.submitting) return;
+    this.showEndModal = false;
+    this.selectedActivation = null;
+    this.selectedAdifFile = null;
+    this.submitError = null;
+  }
+
+  onAdifFileChange(evt: Event) {
+    const input = evt.target as HTMLInputElement;
+    const file = input?.files && input.files.length > 0 ? input.files[0] : null;
+    this.selectedAdifFile = file;
+  }
+
+  async submitEndActivation() {
+    if (!this.selectedActivation || this.submitting) return;
+    this.submitting = true;
+    this.submitError = null;
+    const id = this.selectedActivation.id;
+    try {
+      if (this.selectedAdifFile) {
+        await this.svc.uploadAdif(id, this.selectedAdifFile).toPromise();
+      }
+      await this.svc.endActivation(id).toPromise();
+      // Navigate to dashboard and force reload to refresh state
+      await this.router.navigate(['/dashboard']);
+      // Force a reload to ensure dashboard data refreshes regardless of caching
+      window.location.reload();
+    } catch (e: any) {
+      console.error('Failed to end activation', e);
+      this.submitError = 'Failed to end activation. Please try again.';
+    } finally {
+      this.submitting = false;
+      this.showEndModal = false;
+    }
   }
 }

@@ -41,6 +41,20 @@ export class ActivationsService {
   private readonly postsUrl = joinUrl(environment?.apiBase, '/api/activation_post');
   private readonly currentActivationUrl = joinUrl(environment?.apiBase, '/api/activations/current');
 
+  // Upload an ADIF file for a specific activation (best-guess endpoint). Backend should accept multipart/form-data.
+  uploadAdif(activationId: number | string, file: File): Observable<any> {
+    const url = `${this.activationsUrl}/${activationId}/adif`;
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post(url, form, { withCredentials: true });
+  }
+
+  // Mark an activation as ended (defaults to now if endedAt not provided).
+  endActivation(id: number | string, endedAt?: string): Observable<Activation> {
+    const ts = endedAt ?? new Date().toISOString();
+    return this.updateActivation(id, { endedAt: ts });
+  }
+
   private toSnakeCaseKey(key: string): string {
     return key
       .replace(/([A-Z])/g, '_$1')

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { MotdService } from '../motd/motd.service';
 import { Observable, of } from 'rxjs';
@@ -37,6 +37,12 @@ export class DashboardComponent implements OnInit {
   endSuccess: string | null = null;
   endError: string | null = null;
 
+  // End Activation Modal state (mirror Activations list behavior)
+  showEndModal = false;
+  selectedAdifFile: File | null = null;
+  submitting = false;
+  submitError: string | null = null;
+
   // Self Spot form state
   spotForm!: FormGroup;
   spotSubmitting = false;
@@ -49,7 +55,8 @@ export class DashboardComponent implements OnInit {
     private fb: FormBuilder,
     private activations: ActivationsService,
     private sites: SiteService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   // Build an OpenStreetMap embed URL (iframe) with a marker pin and mark it safe for resource URL context
@@ -231,6 +238,54 @@ export class DashboardComponent implements OnInit {
         this.ending = false;
       }
     });
+  }
+
+  // Open the end-activation modal
+  openEndModal(): void {
+    if (!this.currentActivation || !this.currentActivation.id) {
+      this.endError = 'No active activation to end.';
+      return;
+    }
+    this.selectedAdifFile = null;
+    this.submitError = null;
+    this.showEndModal = true;
+  }
+
+  // Close the modal if not submitting
+  closeEndModal(): void {
+    if (this.submitting) return;
+    this.showEndModal = false;
+    this.selectedAdifFile = null;
+    this.submitError = null;
+  }
+
+  // File input change handler
+  onAdifFileChange(evt: Event): void {
+    const input = evt.target as HTMLInputElement;
+    const file = input?.files && input.files.length > 0 ? input.files[0] : null;
+    this.selectedAdifFile = file;
+  }
+
+  // Submit: optional ADIF upload, then end activation, then navigate and force reload
+  async submitEndActivation(): Promise<void> {
+    if (!this.currentActivation || !this.currentActivation.id || this.submitting) return;
+    this.submitting = true;
+    this.submitError = null;
+    const id = this.currentActivation.id;
+    try {
+      if (this.selectedAdifFile) {
+        await this.activations.uploadAdif(id, this.selectedAdifFile).toPromise();
+      }
+      await this.activations.endActivation(id).toPromise();
+      await this.router.navigate(['/dashboard']);
+      window.location.reload();
+    } catch (e: any) {
+      console.error('Failed to end activation', e);
+      this.submitError = e?.error?.message || 'Failed to end activation. Please try again.';
+    } finally {
+      this.submitting = false;
+      this.showEndModal = false;
+    }
   }
 
   submitSelfSpot(): void {

@@ -65,9 +65,9 @@
                     <option value="completed">Completed</option>
                   </select>
                 </div>
-                <div class="col-6">
+                <div class="col-6" hidden="hidden">
                   <label class="form-label" for="callsign">Callsign</label>
-                  <input id="callsign" type="text" class="form-control bg-light text-on-fota-slate-soft" formControlName="callsign" placeholder="Your callsign">
+                  <input id="callsign" type="text" class="form-control  bg-light text-on-fota-slate-soft" formControlName="callsign" placeholder="Your callsign">
                 </div>
               </div>
 
@@ -117,7 +117,7 @@
               <form [formGroup]="spotForm" (ngSubmit)="submitSelfSpot()" novalidate>
                 <div class="mb-2">
                   <label class="form-label" for="selfSpotBody">Message</label>
-                  <textarea id="selfSpotBody" class="form-control bg-offwhite text-on-fota-slate-soft" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
+                  <textarea id="selfSpotBody" class="form-control bg-light text-on-fota-slate-soft" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
                   <div class="text-danger small mt-1" *ngIf="spotForm.get('content')?.touched && spotForm.get('content')?.invalid">
                     Message is required.
                   </div>
@@ -134,13 +134,37 @@
             <div *ngIf="endError" class="alert alert-danger py-2">{{ endError }}</div>
 
             <div class="mt-3 d-flex gap-2">
-              <button type="button" class="btn btn-danger" (click)="endCurrentActivation()" [disabled]="ending">
+              <button type="button" class="btn btn-danger" (click)="openEndModal()" [disabled]="ending">
                 {{ ending ? 'Ending…' : 'End Activation' }}
               </button>
             </div>
 
           </ng-template>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: End Activation with ADIF upload (dashboard) -->
+<div class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.5);" *ngIf="showEndModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">End Activation</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeEndModal()" [disabled]="submitting"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Optionally upload your ADIF log file. You can skip this and upload later.</p>
+        <input type="file" class="form-control" accept=".adi,.adif,text/plain" (change)="onAdifFileChange($event)" [disabled]="submitting">
+        <div class="text-danger mt-2" *ngIf="submitError">{{ submitError }}</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEndModal()" [disabled]="submitting">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="submitEndActivation()" [disabled]="submitting">
+          {{ submitting ? 'Submitting…' : 'Submit and End' }}
+        </button>
       </div>
     </div>
   </div>

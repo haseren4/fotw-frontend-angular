@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SiteService, Site } from '../site-service/site-service';
+import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
+import {LocationMap} from '../location-map/location-map';
 
 @Component({
   selector: 'app-site-browser-component',
-  imports: [CommonModule],
+  imports: [CommonModule, UnderscoreToSpacePipe, LocationMap],
   templateUrl: './site-browser-component.html',
   styleUrl: './site-browser-component.scss'
 })
