@@ -9,7 +9,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <strong>Site #{{ s.id }}</strong>
-          <div class="small" *ngIf="s.location || s.qth">
+          <div class="small text-offwhite" *ngIf="s.location || s.qth">
             {{ s.location }}<span *ngIf="s.location && s.qth"> • </span>{{ s.qth }}
           </div>
           <div class="small" *ngIf="s.latitude != null && s.longitude != null">
@@ -17,7 +17,7 @@
           </div>
         </div>
         <span class="badge" [class.bg-success]="s.category == 'ARMY_BASE'" [class.bg-secondary]="s.category != 'ARMY_BASE'">
-          {{ s.category}}
+          {{ s.category | underscoreToSpace | titlecase }}
         </span>
       </div>
     </li>

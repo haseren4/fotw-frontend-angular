@@ -117,7 +117,7 @@
               <form [formGroup]="spotForm" (ngSubmit)="submitSelfSpot()" novalidate>
                 <div class="mb-2">
                   <label class="form-label" for="selfSpotBody">Message</label>
-                  <textarea id="selfSpotBody" class="form-control bg-offwhite text-on-fota-slate-soft" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
+                  <textarea id="selfSpotBody" class="form-control bg-light text-on-fota-slate-soft" rows="3" formControlName="content" placeholder="Share an update about your activation"></textarea>
                   <div class="text-danger small mt-1" *ngIf="spotForm.get('content')?.touched && spotForm.get('content')?.invalid">
                     Message is required.
                   </div>

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SiteService, Site } from '../site-service/site-service';
+import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
 
 @Component({
   selector: 'app-site-browser-component',
-  imports: [CommonModule],
+  imports: [CommonModule, UnderscoreToSpacePipe],
   templateUrl: './site-browser-component.html',
   styleUrl: './site-browser-component.scss'
 })
