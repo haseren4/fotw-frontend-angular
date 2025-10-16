@@ -13,15 +13,20 @@
 
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-        <li class="nav-item"><a class="nav-link text-fota-off" href="home">Home</a></li>
+        <li class="nav-item"><a class="nav-link text-fota-off" [routerLink]="homeLink">Home</a></li>
         <li class="nav-item"><a class="nav-link text-fota-off" routerLink="/activations">Activations</a></li>
         <li class="nav-item"><a class="nav-link text-fota-off" routerLink="/location-map">Location Map</a></li>
         <li class="nav-item"><a class="nav-link text-fota-off" routerLink="/on-air-map">On-Air Map</a></li>
-        <li class="nav-item order-lg-2 ms-lg-2">
+
+        <!-- Auth actions -->
+        <li class="nav-item order-lg-2 ms-lg-2" *ngIf="!isLoggedIn">
           <a class="btn btn-fota" href="/login">Log in</a>
         </li>
-        <li class="nav-item order-lg-1">
+        <li class="nav-item order-lg-1" *ngIf="!isLoggedIn">
           <a class="nav-link text-fota-off" routerLink="/register">Sign up</a>
+        </li>
+        <li class="nav-item order-lg-2 ms-lg-2" *ngIf="isLoggedIn">
+          <button class="btn btn-outline-light" type="button" (click)="logout()">Log out</button>
         </li>
       </ul>
     </div>
