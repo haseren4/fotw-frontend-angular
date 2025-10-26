@@ -1,11 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SiteService, Site } from '../site-service/site-service';
-import { UnderscoreToSpacePipe } from '../shared/underscore-to-space.pipe';
 
 @Component({
   selector: 'app-location-map',
-  imports: [CommonModule, UnderscoreToSpacePipe],
+  imports: [CommonModule],
   templateUrl: './location-map.html',
   styleUrl: './location-map.scss'
 })

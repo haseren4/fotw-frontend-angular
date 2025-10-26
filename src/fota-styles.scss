@@ -8,45 +8,29 @@ $fota-off:    #D2CEB5;
 $fota-orange: #D35400;
 $fota-slate:  #3D4D6C;
 
-// ---------------- Bootstrap core (legacy @import order that works) ----------------
-// Import these BEFORE overrides so core maps/mixins exist.
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/maps";
-@import "bootstrap/scss/mixins";
+// ---------------- Load Bootstrap (CSS) ----------------
+@use "bootstrap" as *;
 
-// ---------------- Overrides & theme extension ----------------
-$body-bg:        $fota-olive;
-$body-color:     $fota-off;
-$headings-color: $fota-off;
+// ---------------- CSS variable overrides to restore theme ----------------
+:root {
+  /* Body and text */
+  --bs-body-bg:        #{$fota-olive};
+  --bs-body-color:     #{$fota-off};
+  --bs-heading-color:  #{$fota-off};
 
-$primary:   $fota-orange;
-$secondary: $fota-slate;
-$dark:      $fota-brown;
-$light:     color.mix($fota-off, white, 10%);
+  /* Core theme colors */
+  --bs-primary:   #{$fota-orange};
+  --bs-secondary: #{$fota-slate};
+  --bs-dark:      #{$fota-brown};
+  --bs-light:     #{color.mix($fota-off, white, 10%)};
 
-// Add custom colors to Bootstrap's theme map so utilities generate: .bg-fota, .text-fota, etc.
-$custom-colors: (
-  "fota":        $fota-orange,
-  "fota-slate":  $fota-slate,
-  "fota-olive":  $fota-olive,
-  "fota-brown":  $fota-brown,
-  "fota-off":    $fota-off
-);
+  /* Links */
+  --bs-link-color:       #{$fota-orange};
+  --bs-link-hover-color: #{color.scale($fota-orange, $lightness: -10%)};
+}
 
-// Merge into Bootstrap's $theme-colors (now defined because we imported variables first)
-$theme-colors: map.merge($theme-colors, $custom-colors);
-
-// ---------------- Bring in the full Bootstrap CSS ----------------
-@import "bootstrap/scss/bootstrap";
-
-// ---------------- Optional helpers ----------------
-.btn-fota  { @include button-variant($fota-orange, $fota-orange); }
-.btn-slate { @include button-variant($fota-slate,  $fota-slate);  }
-
-
-
-// Lighten your slate (#3D4D6C) toward white for a soft panel bg
+// ---- Custom helpers that complement the theme ----
+// Lighten slate toward white for a soft panel background
 $fota-slate-soft: color.mix($fota-slate, white, 85%); // tweak 80–90% to taste
 
 .bg-fota-slate-soft { background-color: $fota-slate-soft !important; }

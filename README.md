@@ -57,3 +57,31 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+### Running in Docker
+
+A production-ready Docker image is provided using a multi-stage build (Node → Nginx).
+
+Build the image:
+
+```bash
+# From the project root
+docker build -t fotw-frontend:latest .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8080:80 fotw-frontend:latest
+```
+
+Open the app at:
+
+- http://localhost:8080
+- Health check: http://localhost:8080/health
+
+Notes:
+- The image builds the Angular app with `npm run build` (production by default) and serves static files via Nginx.
+- SPA routing is enabled via Nginx `try_files` so deep links route to `index.html`.
+- To customize Nginx, edit `nginx/default.conf` and rebuild.

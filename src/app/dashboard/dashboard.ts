@@ -26,6 +26,9 @@ export class DashboardComponent implements OnInit {
   currentActivation: any | null = null;
   currentSite: Site | null = null;
 
+  // Sites list for dropdown selection
+  sitesList: Site[] = [];
+
   // Create Activation form state
   activationForm!: FormGroup;
   creating = false;
@@ -147,6 +150,15 @@ export class DashboardComponent implements OnInit {
     } else {
       this.motd$ = this.motd.getMotd();
     }
+
+    // Load sites list for the Site ID dropdown (only active sites)
+    this.sites.getAllSites().subscribe({
+      next: (sites) => {
+        const list = Array.isArray(sites) ? sites : [];
+        this.sitesList = list.filter(s => s && s.active === true);
+      },
+      error: () => { this.sitesList = []; }
+    });
   }
 
   submitActivation(): void {
@@ -175,7 +187,12 @@ export class DashboardComponent implements OnInit {
       next: (created) => {
         this.createSuccess = `Activation created with id ${created?.id ?? ''}`.trim();
         this.creating = false;
-        // Reset form but keep callsign and default status
+        // Reload the page to reflect new activation state per requirement
+        if (typeof window !== 'undefined' && window?.location) {
+          window.location.reload();
+          return;
+        }
+        // Fallback: reset form but keep callsign and default status
         const keepCallsign = payload.callsign;
         this.activationForm.reset({ title: '', description: '', siteId: '', status: 'scheduled', callsign: keepCallsign });
       },

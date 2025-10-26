@@ -52,12 +52,17 @@
               </div>
 
               <div class="mb-3">
-                <label class="form-label" for="siteId">Site ID</label>
-                <input id="siteId" type="text" class="form-control bg-light text-on-fota-slate-soft" formControlName="siteId" placeholder="e.g. 123 (optional)">
+                <label class="form-label" for="siteId">Site</label>
+                <select id="siteId" class="form-select bg-light text-on-fota-slate-soft" formControlName="siteId">
+                  <option [ngValue]="''">Select a site (optional)</option>
+                  <option *ngFor="let s of sitesList" [ngValue]="s.id">
+                    {{ (s.location || s.qth || (s.latitude != null && s.longitude != null ? (s.latitude + ', ' + s.longitude) : 'Site')) | underscoreToSpace }} — ID: {{ s.id }}
+                  </option>
+                </select>
               </div>
 
               <div class="row g-2 align-items-end mb-3">
-                <div class="col-6">
+                <div class="col-6" hidden="hidden">
                   <label class="form-label" for="status">Status</label>
                   <select id="status" class="form-select bg-light text-on-fota-slate-soft" formControlName="status">
                     <option value="scheduled">Scheduled</option>
@@ -83,13 +88,16 @@
               You already have an active activation. You must end it before creating a new one.
             </div>
             <div class="mb-2" *ngIf="currentSite?.id || currentSite?.location || currentSite?.qth">
-              <strong>Site:</strong>
+              <strong>Site:</strong><br>
               <ng-container *ngIf="currentSite as s; else siteIdOnly">
-                <span class="badge rounded-pill bg-primary me-2">{{ (s.category || 'Site') | underscoreToSpace }}</span>
-                <span *ngIf="s.location">{{ s.location | underscoreToSpace }}</span>
-                <span *ngIf="!s.location && s.qth">{{ s.qth | underscoreToSpace }}</span>
-                <span class="text-muted" *ngIf="!s.location && !s.qth && (s.latitude || s.longitude)">{{ s.latitude }}, {{ s.longitude }}</span>
-                <span class="badge rounded-pill bg-secondary ms-2">Site #{{ s.id }}</span>
+                <div class="text-center">
+                  <span class="badge rounded-pill bg-primary me-2">{{ (s.category || 'Site') | underscoreToSpace }}</span>
+                  <span *ngIf="s.location">{{ s.location | underscoreToSpace }}</span>
+                  <span *ngIf="!s.location && s.qth">{{ s.qth | underscoreToSpace }}</span>
+                  <span class="text-muted" *ngIf="!s.location && !s.qth && (s.latitude || s.longitude)">{{ s.latitude }}, {{ s.longitude }}</span>
+                  <span class="badge rounded-pill bg-secondary ms-2">Site #{{ s.id }}</span>
+                </div>
+
               </ng-container>
               <ng-template #siteIdOnly>
                 <span class="badge rounded-pill bg-secondary">Site #{{ currentActivation?.siteId || currentActivation?.site_id }}</span>
