@@ -26,31 +26,43 @@ export interface LoginResult {
   message?: string;
 }
 
+type PasswordTransport = { value: string; method: 'SHA-256' | 'PLAINTEXT' };
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly baseUrl = environment?.apiBase + '/api/users';
 
   constructor(private http: HttpClient) {}
 
-  // Hash password with SHA-256 before sending over the network
-  private async sha256Hex(input: string): Promise<string> {
-    const enc = new TextEncoder();
-    const data = enc.encode(input);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const bytes = new Uint8Array(hashBuffer);
-    let hex = '';
-    for (let i = 0; i < bytes.length; i++) {
-      hex += bytes[i].toString(16).padStart(2, '0');
+  // Try to hash with Web Crypto if available; otherwise fall back to plaintext
+  private async preparePassword(input: string): Promise<PasswordTransport> {
+    try {
+      const w = window as any;
+      const subtle: SubtleCrypto | undefined = w?.crypto?.subtle || w?.msCrypto?.subtle;
+      if (!subtle) {
+        return { value: input, method: 'PLAINTEXT' };
+      }
+      const enc = new TextEncoder();
+      const data = enc.encode(input);
+      const hashBuffer = await subtle.digest('SHA-256', data);
+      const bytes = new Uint8Array(hashBuffer);
+      let hex = '';
+      for (let i = 0; i < bytes.length; i++) {
+        hex += bytes[i].toString(16).padStart(2, '0');
+      }
+      return { value: hex, method: 'SHA-256' };
+    } catch (_e) {
+      // As a safety net, avoid throwing and send plaintext if hashing is not supported.
+      return { value: input, method: 'PLAINTEXT' };
     }
-    return hex;
   }
 
   register(payload: RegisterRequest): Observable<RegisterResponse> {
-    return from(this.sha256Hex(payload.password)).pipe(
-      switchMap((hashed) => {
-        const body = { ...payload, password: hashed };
+    return from(this.preparePassword(payload.password)).pipe(
+      switchMap((pw) => {
+        const body = { ...payload, password: pw.value };
         const headers = new HttpHeaders({
-          'X-Password-Hashed': 'SHA-256',
+          'X-Password-Hashed': pw.method,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         });
@@ -61,11 +73,11 @@ export class AuthService {
 
   // Login and allow cookies from server (e.g., Set-Cookie: callsign=...)
   login(payload: LoginRequest): Observable<LoginResult> {
-    return from(this.sha256Hex(payload.password)).pipe(
-      switchMap((hashed) => {
-        const body = { callsign: payload.callsign, password: hashed };
+    return from(this.preparePassword(payload.password)).pipe(
+      switchMap((pw) => {
+        const body = { callsign: payload.callsign, password: pw.value };
         const headers = new HttpHeaders({
-          'X-Password-Hashed': 'SHA-256',
+          'X-Password-Hashed': pw.method,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         });
