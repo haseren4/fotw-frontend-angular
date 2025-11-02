@@ -1,0 +1,77 @@
+<div class="container py-4">
+  <h1 class="mb-3">Your Past Activations</h1>
+  <p class="text-offwhite">Completed activations associated with your callsign.</p>
+
+  <div *ngIf="!callsign" class="alert alert-warning">
+    We could not detect your callsign. Please sign in and ensure your callsign cookie is set, then reload this page.
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="row g-3 mb-3" *ngIf="stats">
+    <div class="col-12">
+      <div class="card bg-offwhite text-on-fota-slate-soft">
+        <div class="card-body">
+          <h5 class="card-title mb-2">Statistics</h5>
+          <div class="row text-center">
+            <div class="col-6 col-md-3 mb-2">
+              <div class="fw-bold fs-4">{{ stats.totalCount }}</div>
+              <div class="text-muted small">Total Activations</div>
+            </div>
+            <div class="col-6 col-md-3 mb-2">
+              <div class="fw-bold fs-4">{{ stats.totalHours | number:'1.0-1' }}</div>
+              <div class="text-muted small">Total Hours On-Air</div>
+            </div>
+            <div class="col-6 col-md-3 mb-2">
+              <div class="fw-bold fs-5">{{ stats.avgMinutes | number:'1.0-0' }} min</div>
+              <div class="text-muted small">Average Duration</div>
+            </div>
+            <div class="col-6 col-md-3 mb-2">
+              <div class="fw-bold fs-6">{{ stats.longestMinutes | number:'1.0-0' }} min</div>
+              <div class="text-muted small">Longest</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card bg-offwhite text-on-fota-slate-soft">
+        <div class="card-body">
+          <h5 class="card-title">Completed Activations</h5>
+
+          <div *ngIf="loading" class="alert alert-info">Loading past activations…</div>
+          <div *ngIf="!loading && activations.length === 0" class="alert alert-secondary">No past activations found.</div>
+
+          <div class="list-group">
+            <a class="list-group-item list-group-item-action bg-light mb-2"
+               *ngFor="let a of activations; trackBy: trackById"
+               [routerLink]="['/activations', a.id]"
+               [attr.aria-label]="'View details for ' + (a.title || ('Activation #' + a.id))">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                  <div class="fw-bold">
+                    <img [src]="(a.status || 'completed') | statusIcon" [alt]="a.status" style="height:20px; vertical-align:middle;" />
+                    {{ a.title || ('Activation #' + a.id) }}
+                  </div>
+                  <div class="text-muted small">Site: <span class="badge rounded-pill bg-secondary">#{{ a.siteId }}</span></div>
+                </div>
+                <div class="text-end">
+                  <div><strong>Started:</strong> {{ a.startedAt | date:'medium' }}</div>
+                  <div><strong>Ended:</strong> {{ a.endedAt | date:'medium' }}</div>
+                  <div class="small text-muted"><strong>Duration:</strong> {{ getDurationMinutes(a) | number:'1.0-0' }} min</div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="mt-3">
+            <a routerLink="/dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

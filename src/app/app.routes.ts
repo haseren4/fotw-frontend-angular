@@ -80,5 +80,20 @@ export const routes: Routes = [
     path: 'on-air-map',
     loadComponent: () => import('./activations/on-air-map.component').then(m => m.OnAirMapComponent),
     title: 'Fortifications on the Air | On-Air Activations Map'
+  },
+  {
+    path: 'past-activations',
+    loadComponent: () => import('./past-activations/past-activations').then(m => m.PastActivationsComponent),
+    title: 'Fortifications on the Air | Past Activations'
+  },
+  {
+    path: 'activations/:id/contacts',
+    loadComponent: () => import('./activation-contacts/activation-contacts').then(m => m.ActivationContactsComponent),
+    title: 'Fortifications on the Air | Activation Contacts'
+  },
+  {
+    path: 'activations/:id',
+    loadComponent: () => import('./activation-details/activation-details').then(m => m.ActivationDetailsComponent),
+    title: 'Fortifications on the Air | Activation Details'
   }
 ];
