@@ -49,6 +49,18 @@ export class ActivationsService {
     return this.http.post(url, form, { withCredentials: true });
   }
 
+  // Create a new activation from an ADIF file. Backend should derive start/end from first/last QSO.
+  createActivationFromAdif(siteId: number | string, file: File, callsign?: string): Observable<Activation> {
+    const url = `${this.activationsUrl}/adif`;
+    const form = new FormData();
+    form.append('file', file);
+    form.append('site_id', String(siteId));
+    if (callsign && String(callsign).trim().length > 0) {
+      form.append('callsign', String(callsign).trim());
+    }
+    return this.http.post<Activation>(url, form, { withCredentials: true });
+  }
+
   // Mark an activation as ended (defaults to now if endedAt not provided).
   endActivation(id: number | string, endedAt?: string): Observable<Activation> {
     const ts = endedAt ?? new Date().toISOString();

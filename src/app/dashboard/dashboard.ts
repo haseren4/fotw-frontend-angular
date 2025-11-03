@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MotdService } from '../motd/motd.service';
 import { Observable, of } from 'rxjs';
 import { DashboardService } from './dashboard.service';
@@ -15,7 +16,7 @@ import { LocationMap } from '../location-map/location-map';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, UnderscoreToSpacePipe, StatusIconPipe, LocationMap],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule, UnderscoreToSpacePipe, StatusIconPipe, LocationMap],
   templateUrl: './dashboard.html'
 })
 export class DashboardComponent implements OnInit {
@@ -45,6 +46,14 @@ export class DashboardComponent implements OnInit {
   selectedAdifFile: File | null = null;
   submitting = false;
   submitError: string | null = null;
+
+  // Import Past Activation (from ADIF) modal state
+  showImportModal = false;
+  importSelectedFile: File | null = null;
+  importSiteId: string | number | '' = '';
+  importSubmitting = false;
+  importError: string | null = null;
+  importSuccess: string | null = null;
 
   // Self Spot form state
   spotForm!: FormGroup;
@@ -302,6 +311,67 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.submitting = false;
       this.showEndModal = false;
+    }
+  }
+
+  // Import Past Activation (ADIF) UI actions
+  openImportModal(): void {
+    this.importSelectedFile = null;
+    this.importSiteId = '';
+    this.importError = null;
+    this.importSuccess = null;
+    this.showImportModal = true;
+  }
+
+  closeImportModal(): void {
+    if (this.importSubmitting) return;
+    this.showImportModal = false;
+    this.importSelectedFile = null;
+    this.importSiteId = '';
+    this.importError = null;
+    this.importSuccess = null;
+  }
+
+  onImportFileChange(evt: Event): void {
+    const input = evt.target as HTMLInputElement;
+    const file = input?.files && input.files.length > 0 ? input.files[0] : null;
+    this.importSelectedFile = file;
+  }
+
+  async submitImportFromAdif(): Promise<void> {
+    if (this.importSubmitting) return;
+    this.importError = null;
+    this.importSuccess = null;
+    const siteId = this.importSiteId;
+    const file = this.importSelectedFile;
+    if (!siteId || String(siteId).trim() === '') {
+      this.importError = 'Please select a site.';
+      return;
+    }
+    if (!file) {
+      this.importError = 'Please choose an ADIF file to upload.';
+      return;
+    }
+    this.importSubmitting = true;
+    try {
+      const created = await this.activations.createActivationFromAdif(siteId, file, this.callsign ?? undefined).toPromise();
+      this.importSuccess = `Imported activation #${created?.id ?? ''}`.trim();
+      // After import, navigate to activation details if possible, then reload dashboard
+      try {
+        if (created?.id) {
+          await this.router.navigate(['/activation', created.id]);
+        } else {
+          await this.router.navigate(['/dashboard']);
+        }
+      } finally {
+        window.location.reload();
+      }
+    } catch (e: any) {
+      console.error('Failed to import activation from ADIF', e);
+      this.importError = e?.error?.message || 'Failed to import ADIF. Please try again.';
+    } finally {
+      this.importSubmitting = false;
+      this.showImportModal = false;
     }
   }
 
