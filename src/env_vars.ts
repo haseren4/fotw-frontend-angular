@@ -1,4 +1,5 @@
 export const environment = {
-  // Point all backend API requests to local backend server.
-  apiBase: 'http://ec2-3-88-201-38.compute-1.amazonaws.com:8080'
+  // Use same-origin API base in production; rely on reverse proxy (e.g., Nginx) to route /api to the backend.
+  // For local dev with Angular proxy, keep this empty so requests go to "/api/..." and are proxied per proxy.conf.json.
+  apiBase: ''
 };
