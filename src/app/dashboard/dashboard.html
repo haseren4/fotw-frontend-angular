@@ -33,24 +33,12 @@
       <div class="card h-100 bg-offwhite text-on-fota-slate-soft">
         <div class="card-body">
           <ng-container *ngIf="!currentActivation; else currentActivationTpl">
-            <h5 class="card-title">Create Activation</h5>
+            <h5 class="card-title">Start Activation</h5>
 
             <div *ngIf="createSuccess" class="alert alert-success py-2">{{ createSuccess }}</div>
             <div *ngIf="createError" class="alert alert-danger py-2">{{ createError }}</div>
 
             <form [formGroup]="activationForm" (ngSubmit)="submitActivation()" novalidate>
-              <div class="mb-3">
-                <label class="form-label" for="title">Title</label>
-                <input id="title" type="text" class="form-control bg-light text-on-fota-slate-soft" formControlName="title" placeholder="Activation title">
-                <div class="text-danger small mt-1" *ngIf="activationForm.get('title')?.touched && activationForm.get('title')?.invalid">
-                  Title is required.
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label" for="description">Description</label>
-                <textarea id="description" class="form-control bg-light text-on-fota-slate-soft" rows="3" formControlName="description" placeholder="Brief description (optional)"></textarea>
-              </div>
 
               <div class="mb-3">
                 <label class="form-label" for="siteId">Site</label>
@@ -62,20 +50,6 @@
                 </select>
               </div>
 
-              <div class="row g-2 align-items-end mb-3">
-                <div class="col-6" hidden="hidden">
-                  <label class="form-label" for="status">Status</label>
-                  <select id="status" class="form-select bg-light text-on-fota-slate-soft" formControlName="status">
-                    <option value="scheduled">Scheduled</option>
-                    <option value="on_air">On Air</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
-                <div class="col-6" hidden="hidden">
-                  <label class="form-label" for="callsign">Callsign</label>
-                  <input id="callsign" type="text" class="form-control  bg-light text-on-fota-slate-soft" formControlName="callsign" placeholder="Your callsign">
-                </div>
-              </div>
 
               <div class="d-flex gap-2 flex-wrap">
                 <button type="submit" class="btn btn-primary" [disabled]="creating">{{ creating ? 'Creating…' : 'Create Activation' }}</button>
