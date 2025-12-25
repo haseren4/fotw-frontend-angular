@@ -1,30 +1,79 @@
 <div class="container py-3">
-  <app-location-map></app-location-map>
-  <h2>Browse Sites</h2>
-
-  <div *ngIf="loading" class="alert alert-info">Loading sites…</div>
-  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-
-  <ul *ngIf="!loading && !error && sites?.length" class="list-group">
-    <li class="list-group-item" *ngFor="let s of sites">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <strong>Site #{{ s.id }}</strong>
-          <div class="small text-offwhite" *ngIf="s.location || s.qth">
-            {{ s.location }}<span *ngIf="s.location && s.qth"> • </span>{{ s.qth }}
-          </div>
-          <div class="small" *ngIf="s.latitude != null && s.longitude != null">
-            {{ s.latitude }}, {{ s.longitude }}
-          </div>
-        </div>
-        <span class="badge" [class.bg-success]="s.category == 'ARMY_BASE'" [class.bg-secondary]="s.category != 'ARMY_BASE'">
-          {{ s.category | underscoreToSpace | titlecase }}
-        </span>
+  <form class="mb-3">
+    <!-- All filters on a single responsive line (wrap on small screens) -->
+    <div class="filters d-flex flex-wrap flex-lg-nowrap align-items-stretch gap-2">
+      <div class="input-group">
+        <span class="input-group-text">Category</span>
+        <select class="form-select" name="category" [(ngModel)]="selectedCategory" (change)="search()">
+          <option value="">All</option>
+          <option value="ARMY_BASE">Army Bases</option>
+          <option value="NAVY_BASE">Navy Bases</option>
+          <option value="MARINE_BASE">Marine Bases</option>
+          <option value="AIR_FORCE_BASE">Air Force Bases</option>
+          <option value="COAST_GUARD">Coast Guard Bases</option>
+          <option value="SPACE_FORCE_BASE">Space Force Bases</option>
+        </select>
       </div>
-    </li>
-  </ul>
 
-  <div *ngIf="!loading && !error && (!sites || !sites.length)" class="text-muted">
-    No sites found.
+      <div class="input-group">
+        <span class="input-group-text">QTH</span>
+        <select class="form-select" name="qthSelect" [(ngModel)]="selectedQth" (change)="search()">
+          <option value="">All</option>
+          <option *ngFor="let q of availableQths" [value]="q">{{ q }}</option>
+        </select>
+      </div>
+
+      <input type="text" class="form-control flex-grow-1" name="searchTerm" placeholder="Search name or location" [(ngModel)]="searchTerm" (ngModelChange)="search()">
+
+      <button class="btn btn-outline-secondary" type="button" (click)="selectedQth=''; search()">Clear QTH</button>
+    </div>
+  </form>
+  <div class="row g-3 two-col">
+    <div class="col-12 col-lg-7">
+      <app-location-map
+        [sites]="finishedSiteList"
+        [loading]="loading"
+        [error]="error"
+        (siteClick)="onSiteClick($event)">
+      </app-location-map>
+    </div>
+    <div class="col-12 col-lg-5">
+      <h2 class="h5 mb-3">Browse Sites</h2>
+
+      <div *ngIf="loading" class="alert alert-info">Loading sites…</div>
+      <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+      <ul *ngIf="!loading && !error && finishedSiteList?.length" class="list-group site-list scrollable">
+        <ng-container>
+          <li class="list-group-item" *ngFor="let s of finishedSiteList">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>Site #{{ s.id }}</strong>
+                <div class="small text-offwhite" *ngIf="s.location || s.qth">
+                  {{ s.location }}<span *ngIf="s.location && s.qth"> • </span>{{ s.qth }}
+                </div>
+                <div class="small" *ngIf="s.latitude != null && s.longitude != null">
+                  {{ s.latitude }}, {{ s.longitude }}
+                </div>
+              </div>
+              <span class="badge"
+                    [class.army]="s.category == 'ARMY_BASE' || s.category== 'NG_ARMY_BASE'"
+                    [class.airforce]="s.category == 'AIR_FORCE_BASE'"
+                    [class.marine]="s.category == 'MARINE_BASE'"
+                    [class.navy]="s.category == 'NAVY_BASE'"
+                    [class.space]="s.category == 'SPACE_FORCE_BASE'"
+                    [class.coastguard]="s.category== 'COAST_GUARD_BASE'"
+              >
+                {{ s.category | underscoreToSpace | titlecase }}
+              </span>
+            </div>
+          </li>
+        </ng-container>
+      </ul>
+
+      <div *ngIf="!loading && !error && (!finishedSiteList || !finishedSiteList.length)" class="text-muted">
+        No sites found.
+      </div>
+    </div>
   </div>
 </div>

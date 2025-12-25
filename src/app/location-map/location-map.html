@@ -5,27 +5,36 @@
   <!-- Map -->
   <div *ngIf="!loading && !error" class="map-container mb-3">
     <div class="world-map">
-      <ng-container *ngFor="let s of sites">
-        <div class="pin"
-             [style.left]="toLeftPercent(s.longitude)"
-             [style.top]="toTopPercent(s.latitude)"
-             tabindex="0"
-             (mouseenter)="onHover(s)"
-             (mouseleave)="onHover(null)"
-             (focusin)="onHover(s)"
-             (focusout)="onHover(null)"
-             (click)="onClick(s)">
-          <div class="dot" [class.active]="s.active"></div>
+      <ng-container *ngIf="showArmySites"> <!-- Show Army sites -->
+
+        <ng-container *ngFor="let s of displayedSites">
+          <div class="pin"
+               [style.left]="toLeftPercent(s.longitude)"
+               [style.top]="toTopPercent(s.latitude)"
+               tabindex="0"
+               (mouseenter)="onHover(s)"
+               (mouseleave)="onHover(null)"
+               (focusin)="onHover(s)"
+               (focusout)="onHover(null)"
+               (click)="onClick(s)">
+            <div class="dot"
+                 [class.army]="s.active && s.category == 'ARMY_BASE'"
+                 [class.airforce]="s.active && s.category == 'AIR_FORCE_BASE'"
+                 [class.marine]="s.active && s.category == 'MARINE_BASE'"
+                 [class.coastguard]="s.active && s.category == 'COAST_GUARD'"
+                 [class.navy]="s.active && s.category == 'NAVY_BASE'"
+                 [class.space]="s.active && s.category == 'SPACE_FORCE_BASE'"
+            ></div>
+          </div>
+        </ng-container>
+        <!-- Bottom-of-map tooltip -->
+        <div class="map-tooltip-bottom" *ngIf="hoveredSite as hs">
+          <div class="title">Site #{{ hs.id }}</div>
+          <div class="line" *ngIf="hs.location || hs.qth">{{ hs.location }}<span *ngIf="hs.location && hs.qth"> • </span>{{ hs.qth }}</div>
+          <div class="line" *ngIf="hs.category">Category: {{ hs.category }}</div>
+          <div class="line coords" *ngIf="hs.latitude != null && hs.longitude != null">{{ hs.latitude }}, {{ hs.longitude }}</div>
         </div>
       </ng-container>
-
-      <!-- Bottom-of-map tooltip -->
-      <div class="map-tooltip-bottom" *ngIf="hoveredSite as hs">
-        <div class="title">Site #{{ hs.id }}</div>
-        <div class="line" *ngIf="hs.location || hs.qth">{{ hs.location }}<span *ngIf="hs.location && hs.qth"> • </span>{{ hs.qth }}</div>
-        <div class="line" *ngIf="hs.category">Category: {{ hs.category }}</div>
-        <div class="line coords" *ngIf="hs.latitude != null && hs.longitude != null">{{ hs.latitude }}, {{ hs.longitude }}</div>
-      </div>
     </div>
   </div>
 

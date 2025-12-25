@@ -95,7 +95,6 @@ export class DashboardComponent implements OnInit {
 
     // Init activation form
     this.activationForm = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(120)]],
       description: ['', [Validators.maxLength(2000)]],
       siteId: ['', []],
       status: ['scheduled', []],
@@ -171,39 +170,50 @@ export class DashboardComponent implements OnInit {
   }
 
   submitActivation(): void {
+    console.log("Submitting activation...");
     this.createSuccess = null;
     this.createError = null;
 
     if (this.activationForm.invalid) {
+      console.log("Activation form invalid");
+      console.log(this.activationForm.invalid);
+      Object.entries(this.activationForm.controls).forEach(([name, c]) => {
+        if (c.invalid) console.log(name, c.errors, 'value=', c.value);
+      });
       this.activationForm.markAllAsTouched();
       return;
     }
 
     const raw = this.activationForm.value;
+    console.log(raw);
     const payload: any = {
-      title: (raw.title ?? '').toString().trim(),
       description: (raw.description ?? '').toString().trim() || undefined,
       status: (raw.status ?? 'scheduled').toString(),
       callsign: (raw.callsign ?? this.callsign ?? '').toString().trim(),
       currentDate: new Date().toISOString()
     };
+    console.log(payload);
     if (raw.siteId !== null && raw.siteId !== undefined && String(raw.siteId).trim() !== '') {
       payload.siteId = String(raw.siteId).trim();
+      console.log(payload.siteId);
     }
 
     this.creating = true;
+    console.log(payload);
     this.activations.createActivation(payload).subscribe({
       next: (created) => {
         this.createSuccess = `Activation created with id ${created?.id ?? ''}`.trim();
+        console.log(this.createSuccess);
         this.creating = false;
         // Reload the page to reflect new activation state per requirement
         if (typeof window !== 'undefined' && window?.location) {
           window.location.reload();
+          console.log("Reloading dashboard")
           return;
         }
         // Fallback: reset form but keep callsign and default status
         const keepCallsign = payload.callsign;
-        this.activationForm.reset({ title: '', description: '', siteId: '', status: 'scheduled', callsign: keepCallsign });
+        this.activationForm.reset({  description: '', siteId: '', status: 'scheduled', callsign: keepCallsign });
       },
       error: (err) => {
         console.error('Failed to create activation', err);

@@ -1,0 +1,20 @@
+/* Side-by-side layout tweaks for the map and the site list */
+:host {
+  display: block;
+}
+
+.two-col {
+  /* make the right column list scroll independently on taller screens */
+  .site-list.scrollable {
+    max-height: 65vh;
+    overflow: auto;
+  }
+}
+
+/* Small screens naturally stack; nothing special needed */
+.army { background: #28a745; /* bootstrap success */}
+.navy { background: navy;}
+.airforce {background: deepskyblue;}
+.marine {background: darkred;}
+.space { background: black}
+.coastguard {background: gold;}

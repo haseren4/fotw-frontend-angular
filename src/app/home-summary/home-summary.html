@@ -26,7 +26,7 @@
     <h2 class="h3 fw-semibold mb-3">What is FOTA?</h2>
     <p class="mb-0">
       Fortifications on the Air (FOTA) encourages licensed amateurs to operate from or near documented
-      fortifications—medieval castles, trace-italienne star forts, coastal batteries, redoubts, and earthworks.
+      fortifications—military bases, medieval castles, trace-italienne star forts, coastal batteries, redoubts, and earthworks.
       Every activation adds to a living log of radio activity tied to history and geography.
     </p>
   </div>
@@ -69,16 +69,18 @@
             <ul class="mb-0">
               <li>Global Fort Directory</li>
               <li>Live Activation Map</li>
-              <li>Built-in Logging & ADIF</li>
-              <li>Awards & Milestones</li>
-              <li>API & Integrations</li>
+              <li><a href="roadmap">Roadmap to Future Releases</a></li>
             </ul>
           </div>
         </div>
       </div>
       <div class="col-md-8">
         <div class="ratio ratio-21x9 bg-fota-olive d-flex align-items-center justify-content-center rounded mb-5">
-          <app-location-map></app-location-map>
+          <app-location-map
+            [sites]="sites"
+            [loading]="loading"
+            [error]="error"
+          ></app-location-map>
         </div>
       </div>
     </div>

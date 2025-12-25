@@ -33,10 +33,12 @@
   box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
 }
 
-.pin .dot.active {
-  background: #28a745; /* bootstrap success */
-}
-
+.pin .dot.army { background: #28a745; /* bootstrap success */}
+.pin .dot.navy { background: navy;}
+.pin .dot.airforce {background: deepskyblue;}
+.pin .dot.marine {background: darkred;}
+.pin .dot.space { background: black}
+.pin .dot.coastguard {background: gold;}
 /* Bottom-of-map tooltip that shows hovered pin details */
 .map-tooltip-bottom {
   position: absolute;

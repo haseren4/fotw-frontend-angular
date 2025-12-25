@@ -34,4 +34,8 @@ export class SiteService {
   getById(id: number | string): Observable<Site> {
     return this.http.get<Site>(`${this.baseUrl}/${id}`);
   }
+
+  getSitesByCategory(category: string): Observable<Site[]> {
+    return this.http.get<Site[]>(`${this.baseUrl}/category/${category}`);
+  }
 }

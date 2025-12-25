@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, input} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SiteService, Site } from '../site-service/site-service';
+import { Site } from '../site-service/site-service';
 
 @Component({
   selector: 'app-location-map',
@@ -9,46 +9,46 @@ import { SiteService, Site } from '../site-service/site-service';
   styleUrl: './location-map.scss'
 })
 export class LocationMap implements OnInit {
+  // Controlled inputs from parent
+  @Input() sites: Site[] = [];
+  @Input() loading = false;
+  @Input() error: string | null = null;
+
+  // Optional flags (parent-controllable)
+  @Input() showArmySites = true;
+  @Input() showAFSites = false;
+  @Input() showMarinesSites = false;
+  @Input() showNavySites = false;
+  @Input() showSpaceSites = false;
+  @Input() showCoastguardSites = false;
+
+  // Backwards-compat: allow passing a single site; if provided and sites is empty, we'll show just this
   @Input() singleSite?: Site | null;
 
-  sites: Site[] = [];
-  loading = false;
-  error: string | null = null;
+  // Outputs to let parent react to interactions
+  @Output() siteClick = new EventEmitter<Site>();
+  @Output() hoverSiteChange = new EventEmitter<Site | null>();
 
   // Track currently hovered/focused site for bottom tooltip
   hoveredSite: Site | null = null;
 
-  constructor(private siteService: SiteService) {}
-
   ngOnInit(): void {
-    if (this.singleSite && this.singleSite.latitude != null && this.singleSite.longitude != null) {
+    if ((this.sites == null || this.sites.length === 0) && this.singleSite && this.singleSite.latitude != null && this.singleSite.longitude != null) {
       this.sites = [this.singleSite];
       this.loading = false;
       this.error = null;
-    } else {
-      this.fetchSites();
     }
   }
 
-  private fetchSites(): void {
-    this.loading = true;
-    this.error = null;
-    this.siteService.getAllSites().subscribe({
-      next: (sites) => {
-        this.sites = (sites ?? []).filter(s => (s.active === true) && s.latitude != null && s.longitude != null);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Failed to load sites for map', err);
-        this.error = 'Failed to load sites.';
-        this.loading = false;
-      }
-    });
+  // Derived list to ensure only plottable active sites are shown
+  get displayedSites(): Site[] {
+    return (this.sites ?? []).filter(s => (s.active === true) && s.latitude != null && s.longitude != null);
   }
 
   // Handlers to control bottom tooltip visibility/content
   onHover(site: Site | null): void {
     this.hoveredSite = site;
+    this.hoverSiteChange.emit(site);
   }
 
   // Equirectangular projection: convert lat/lon to percentage positions
@@ -68,8 +68,7 @@ export class LocationMap implements OnInit {
   }
 
   onClick(s: Site) {
-    if(s == null) return;
-    console.log('Site clicked:', s);
-
+    if (s == null) return;
+    this.siteClick.emit(s);
   }
 }
