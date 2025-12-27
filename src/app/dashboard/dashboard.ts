@@ -195,6 +195,7 @@ export class DashboardComponent implements OnInit {
     console.log(payload);
     if (raw.siteId !== null && raw.siteId !== undefined && String(raw.siteId).trim() !== '') {
       payload.siteId = String(raw.siteId).trim();
+      payload.siteId = String(raw.siteId).split(" ").pop();
       console.log(payload.siteId);
     }
 
