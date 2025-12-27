@@ -1,6 +1,6 @@
 export const environment = {
   // Production: use absolute API host for backend requests
   // Example requests will resolve to: "https://api.fortsontheair.com/api/..."
-  //apiBase: 'https://api.fortsontheair.com'
-  apiBase: 'http://localhost:8080'
+  apiBase: 'https://api.fortsontheair.com'
+  //apiBase: 'http://localhost:8080'
 };
