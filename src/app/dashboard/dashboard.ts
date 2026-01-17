@@ -359,13 +359,22 @@ export class DashboardComponent implements OnInit {
       this.importError = 'Please select a site.';
       return;
     }
+
     if (!file) {
       this.importError = 'Please choose an ADIF file to upload.';
       return;
     }
     this.importSubmitting = true;
+
+    function validateSiteId(siteId: string | number) {
+      if (!siteId) return undefined;
+      const s = String(siteId).trim();
+      const match = s.match(/(\d+)$/);
+      return match ? parseInt(match[1], 10) : undefined;
+    }
+
     try {
-      const created = await this.activations.createActivationFromAdif(siteId, file, this.callsign ?? undefined).toPromise();
+      const created = await this.activations.createActivationFromAdif(validateSiteId(siteId), file, this.callsign ?? undefined).toPromise();
       this.importSuccess = `Imported activation #${created?.id ?? ''}`.trim();
       // After import, navigate to activation details if possible, then reload dashboard
       try {

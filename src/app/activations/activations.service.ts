@@ -50,7 +50,7 @@ export class ActivationsService {
   }
 
   // Create a new activation from an ADIF file. Backend should derive start/end from first/last QSO.
-  createActivationFromAdif(siteId: number | string, file: File, callsign?: string): Observable<Activation> {
+  createActivationFromAdif(siteId: undefined | number, file: File, callsign?: string | undefined): Observable<Activation> {
     const url = `${this.activationsUrl}/adif`;
     const form = new FormData();
     form.append('file', file);
